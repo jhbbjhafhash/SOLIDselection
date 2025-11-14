@@ -8,12 +8,13 @@ public class SelectionManager : MonoBehaviour
 
     private Transform _selection;
 
-    private HighlightSelectionResponse selectionResponse;
+    private ISelectionResponse _selectionResponse;
 
     private void Awake()
     {
         SceneManager.LoadScene("Environment", LoadSceneMode.Additive);
         SceneManager.LoadScene("UI", LoadSceneMode.Additive);
+        _selectionResponse = GetComponent<ISelectionResponse>();
     }
 
     private void Update()
@@ -38,30 +39,6 @@ public class SelectionManager : MonoBehaviour
         if (_selection != null)
         {
             _selectionResponse.OnDeselect(_selection);
-        }
-    }
-}
-
-internal class HighlightSelectionResponse : Monobehavior
-{
-    [SerializeField] public Material highlightMaterial;
-    [SerializeField] public Material defaultMaterial;
-
-    private void OnSelect(Transform selection)
-    {
-        var selectionRenderer = _selection.GetComponent<Renderer>();
-        if (selectionRenderer != null)
-        {
-            selectionRenderer.material = _selectionResponse.defaultMaterial;
-        }
-    }
-
-    private void OnDeselect(Transfrom selection)
-    {
-        var selectionRenderer = _selection.GetComponent<Renderer>();
-        if (selectionRenderer != null)
-        {
-            selectionRenderer.material = _selectionResponse.highlightMaterial;
         }
     }
 }
