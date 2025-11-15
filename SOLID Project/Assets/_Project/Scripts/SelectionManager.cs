@@ -1,11 +1,13 @@
 ﻿using System.Security.Cryptography;
+using UnityEditor.ShaderKeywordFilter;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SelectionManager : MonoBehaviour
 {
-    [SerializeField] private string selectableTag = "Selectable";
-
+    private IRayProvider _rayProvider;
+    private ISelector _selector;
+    private Transform _currentSelection;
     private Transform _selection;
 
     private ISelectionResponse _selectionResponse;
@@ -14,31 +16,26 @@ public class SelectionManager : MonoBehaviour
     {
         SceneManager.LoadScene("Environment", LoadSceneMode.Additive);
         SceneManager.LoadScene("UI", LoadSceneMode.Additive);
+
+        _rayProvider = GetComponent<IRayProvider>();
+        _selector = GetComponent<ISelector>();
         _selectionResponse = GetComponent<ISelectionResponse>();
     }
 
     private void Update()
     {
-        if (_selection != null)
+        if (_currentSelection != null)
         {
-            _selectionResponse.OnSelect(_selection);
+            _selectionResponse.OnSelect(_currentSelection);
         }
+        // Ray Creation
+        var ray = _rayProvider.CreateRay();
 
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        _currentSelection = _selector.GetSelection();
 
-        _selection = null;
-        if (Physics.Raycast(ray, out var hit))
+        if (_currentSelection != null)
         {
-            var selection = hit.transform;
-            if (selection.CompareTag(selectableTag))
-            {
-                _selection = selection;
-            }
-        }
-
-        if (_selection != null)
-        {
-            _selectionResponse.OnDeselect(_selection);
+            _selectionResponse.OnDeselect(_currentSelection);
         }
     }
 }
