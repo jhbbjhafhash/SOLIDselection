@@ -9,7 +9,6 @@ public class SelectionManager : MonoBehaviour
     private ISelector _selector;
     private Transform _currentSelection;
     private Transform _selection;
-
     private ISelectionResponse _selectionResponse;
 
     private void Awake()
@@ -24,18 +23,11 @@ public class SelectionManager : MonoBehaviour
 
     private void Update()
     {
-        if (_currentSelection != null)
-        {
-            _selectionResponse.OnSelect(_currentSelection);
-        }
-        // Ray Creation
-        var ray = _rayProvider.CreateRay();
-
+        if (_currentSelection != null) _selectionResponse.OnSelect(_currentSelection);
+  
+        _selector.Check(_rayProvider.CreateRay());
         _currentSelection = _selector.GetSelection();
 
-        if (_currentSelection != null)
-        {
-            _selectionResponse.OnDeselect(_currentSelection);
-        }
+        if (_currentSelection != null) _selectionResponse.OnDeselect(_currentSelection);
     }
 }
